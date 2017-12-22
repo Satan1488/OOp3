@@ -95,7 +95,7 @@ private:
 			arr[i] *= x;
 	}
 public:
-	friend ostream& operator <<(ostream &,XD &);
+	friend ostream& operator <<(ostream &, XD &);
 
 	friend istream& operator >>(istream &, XD &);
 
@@ -187,7 +187,7 @@ public:
 				n++;
 			}
 		}
-		for (int i = 1;i != n;i++) {
+		for (int i = 1; i != n; i++) {
 			gg = gg + res % 10;
 			res /= 10;
 			gg *= 10;
@@ -378,7 +378,7 @@ public:
 
 	char* getString() {
 		char* str = new char[length + 1];
-		for (int i = 0;i < length;i++)
+		for (int i = 0; i < length; i++)
 			str[i] = arr[length - i - 1];
 		str[length] = 0;
 		return str;
@@ -520,7 +520,7 @@ public:
 			char *c = new char[new_length];
 			for (int i = new_length - 2; i >= n; i--)
 				c[i] = arr[i - n];
-			for (int i = n - 1;i >= 0;i--)
+			for (int i = n - 1; i >= 0; i--)
 				c[i] = 48;
 			c[new_length - 1] = 0;
 			XD* res = new XD(c, false);
@@ -617,7 +617,7 @@ public:
 
 	XD &Del(XD &x) {
 		if (!isBigger(x))
-			return XD(0);
+			return *(new XD(0));
 		int i = 0;
 		XD t = x;
 		while (isBigger(t)) {
@@ -627,14 +627,14 @@ public:
 			++i;
 		}
 		if (Equal(t))
-			return XD(i + 1);
+			return *(new XD(i + 1));
 		else
-			return XD(i);
+			return *(new XD(i));
 	}
 
-	/*fstream fil(XD &x)	 {
-		fstream ja("algebra.txt", ios::out);
-	}*/
+	int Write(fstream& of) {
+
+	}
 
 	~XD() {
 		if (arr != nullptr)
@@ -648,24 +648,38 @@ int XD::count = 0;
 
 ostream& operator<<(ostream &os, XD &x)
 {
-	os << x.getString();
+	for (int i = 0; i < x.len; i++)
+		os << x.arr[i];
 	return os;
 }
 
 istream& operator >> (istream &os, XD &x)
 {
+	os >> x.len;
+	delete[]x.arr;
+	x.arr = new char[x.len + 1];
+	for (int i = 0; i < x.len; i++)
+		os >> x.arr[i];
+	x.arr[x.len] = '\0';
 	return os;
 }
 
 ofstream& operator <<(ofstream &of, XD &x)
 {
-//	of << &x.len;
-//	return of;
+	of << x.len;
+	for (int i = 0; i < x.len; i++)
+		of << x.arr[i];	
+	return of;
 }
 
 ifstream& operator >> (ifstream &os, XD &x)
 {
+	os >> x.len;
+	delete[]x.arr;
+	x.arr = new char[x.len + 1];
+	for (int i = 0; i < x.len; i++)
+		os >> x.arr[i];
+	x.arr[x.len] = '\n';
 	return os;
 }
-
 
