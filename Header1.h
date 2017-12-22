@@ -632,8 +632,33 @@ public:
 			return *(new XD(i));
 	}
 
-	int Write(fstream& of) {
+	long long Write(fstream& of) {
+		if (of.fail())//поток упал, вернуть код ошибки
+			return -2;
+		of.write((char*)(&length), sizeof(long long));//записываем длину
+		for (int i = 0; i < this->length; i++) {
+			if (of.eof())//неожиданный конец файла, вернуть код ошибки
+				return -1;
+			of.write(&arr[i], sizeof(char));//записываем все символы
+		}
+		return length;//вернуть кол-во считанных элементов
+	}
 
+	long long Write(fstream& of) {
+		if (of.fail())//поток упал, вернуть код ошибки
+			return -2;
+		of.read((char*)(&length), sizeof(long long));//записываем длину
+		if (length < 0)//отрицательная длина
+			return -3;
+		delete[]arr;
+		arr = new char[len + 1];
+		for (int i = 0; i < this->length; i++) {
+			if (of.eof())//неожиданный конец файла, вернуть код ошибки
+				return -1;
+			of.read(&arr[i], sizeof(char));//записываем все символы
+		}
+		arr[len] = '\0';
+		return length;//вернуть кол-во считанных элементов
 	}
 
 	~XD() {
@@ -648,38 +673,38 @@ int XD::count = 0;
 
 ostream& operator<<(ostream &os, XD &x)
 {
-	for (int i = 0; i < x.len; i++)
+	for (int i = 0; i < x.length; i++)
 		os << x.arr[i];
 	return os;
 }
 
 istream& operator >> (istream &os, XD &x)
 {
-	os >> x.len;
+	os >> x.length;
 	delete[]x.arr;
-	x.arr = new char[x.len + 1];
-	for (int i = 0; i < x.len; i++)
+	x.arr = new char[x.length + 1];
+	for (int i = 0; i < x.length; i++)
 		os >> x.arr[i];
-	x.arr[x.len] = '\0';
+	x.arr[x.length] = '\0';
 	return os;
 }
 
 ofstream& operator <<(ofstream &of, XD &x)
 {
-	of << x.len;
-	for (int i = 0; i < x.len; i++)
+	of << x.length;
+	for (int i = 0; i < x.length; i++)
 		of << x.arr[i];	
 	return of;
 }
 
 ifstream& operator >> (ifstream &os, XD &x)
 {
-	os >> x.len;
+	os >> x.length;
 	delete[]x.arr;
-	x.arr = new char[x.len + 1];
-	for (int i = 0; i < x.len; i++)
+	x.arr = new char[x.length + 1];
+	for (int i = 0; i < x.length; i++)
 		os >> x.arr[i];
-	x.arr[x.len] = '\n';
+	x.arr[x.length] = '\n';
 	return os;
 }
 
